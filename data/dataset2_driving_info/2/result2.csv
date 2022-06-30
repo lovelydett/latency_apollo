@@ -1,2 +1,1 @@
-ts_start,ts_end,type,component,execution_time,ts_cam,ts_lidar,ts_radar,lat_cam,lat_lidar,lat_radar,is_finish,info
-1656493184160250284,1656493184160265001,Timing,MotionService::OnLocalization,14717,0,0,0,1656493184160265001,1656493184160265001,1656493184160265001,0
+ts_start,ts_end,type,component,execution_time,ts_cam,ts_lidar,ts_radar,ts_TL,ts_lane,lat_cam,lat_lidar,lat_radar,lat_TL,lat_lane,is_finish,info
