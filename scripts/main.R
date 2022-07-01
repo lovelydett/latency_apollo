@@ -19,13 +19,14 @@
 #   4.3 AR/MA model to fit
 #   4.4 GP model to fit the whole graph
 
-setwd("d:\\Codes\\latency_apollo\\scripts")
+# setwd("d:\\Codes\\latency_apollo\\scripts")
+setwd("/home/tt/Codes/latency_apollo/scripts")
 
 library("assert", help, pos = 2, lib.loc = NULL)
 
 # Task 1.1 Compare two time series
-data_whole <- read.csv('../data/dataset1/6/whole/result9.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
-data_solo <- read.csv('../data/dataset1/6/solo/result2.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
+data_whole <- read.csv('../data/dataset1/3/whole/result9.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
+data_solo <- read.csv('../data/dataset1/3/solo/result2.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
 
 # Basic stats
 runtime_whole <- data_whole[data_whole$is_finish == 1, "execution_time"] / 1e6
@@ -43,7 +44,7 @@ boxplot(runtime_whole, runtime_solo,
     at = c(1,2),
     names = c("Whole", "Solo"),
     las = 2,
-    col = c("blue","red"),
+    col = c("blue", "red"),
     border = "brown",
     horizontal = FALSE,
     notch = TRUE
