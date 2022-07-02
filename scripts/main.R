@@ -25,8 +25,8 @@ setwd("/home/tt/Codes/latency_apollo/scripts")
 library("assert", help, pos = 2, lib.loc = NULL)
 
 # Task 1.1 Compare two time series
-data_whole <- read.csv('../data/dataset1/3/whole/result9.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
-data_solo <- read.csv('../data/dataset1/3/solo/result2.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
+data_whole <- read.csv('../data/dataset1/3/whole/lane.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
+data_solo <- read.csv('../data/dataset1/3/solo/lane.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
 
 # Basic stats
 runtime_whole <- data_whole[data_whole$is_finish == 1, "execution_time"] / 1e6
