@@ -20,17 +20,30 @@
 #   4.4 GP model to fit the whole graph
 
 # setwd("d:\\Codes\\latency_apollo\\scripts")
-setwd("/home/tt/Codes/latency_apollo/scripts")
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
 
-library("assert", help, pos = 2, lib.loc = NULL)
+# Avoid scientific notion
+options(scipen = 100)
+
+# Load packages
+library("vistime", help, pos = 2, lib.loc = NULL)
+library("stats", help, pos = 2, lib.loc = NULL)
+
+# Times
+MS_TO_NS <- 1e6
 
 # Task 1.1 Compare two time series
-data_whole <- read.csv('../data/dataset1/3/whole/lane.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
-data_solo <- read.csv('../data/dataset1/3/solo/lane.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
+data_whole <- read.csv('../data/dataset1/2/whole/prediction.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
+data_solo <- read.csv('../data/dataset1/2/solo/prediction.csv', header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
 
-# Basic stats
-runtime_whole <- data_whole[data_whole$is_finish == 1, "execution_time"] / 1e6
-runtime_solo <- data_solo[data_solo$is_finish == 1, "execution_time"] / 1e6
+# Basic stats                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+ma <- max(data_whole[(data_whole$is_finish == 1) & (data_whole$execution_time < 100000000), "execution_time"])
+mi <- min(data_whole[(data_whole$is_finish == 1) & (data_whole$execution_time < 100000000), "execution_time"])
+
+data_whole[data_whole$execution_time > 100000000 , "execution_time"] = ma
+
+runtime_whole <- data_whole[data_whole$is_finish == 1 , "execution_time"] / MS_TO_NS
+runtime_solo <- data_solo[data_solo$is_finish == 1, "execution_time"] / MS_TO_NS
 print("Whole mode:")
 print(sprintf("Mean: %.2fms", mean(runtime_whole)))
 print(sprintf("SD: %.2fms", sd(runtime_whole)))
@@ -50,4 +63,23 @@ boxplot(runtime_whole, runtime_solo,
     notch = TRUE
 )
 
-# Check sequantial nature
+# Gannt diagrams
+# picked_df <- data_whole[6004:6028, c("ts_start", "ts_end", "component", "execution_time")]
+# origin <- picked_df$ts_start[1] %/% MS_TO_NS
+# picked_df$ts_start <- picked_df$ts_start %/% MS_TO_NS
+# picked_df$ts_start <- picked_df$ts_start - origin
+# picked_df$ts_end <- picked_df$ts_end %/% MS_TO_NS - origin
+# picked_df$execution_time <- picked_df$execution_time / MS_TO_NS
+
+# print(picked_df)
+
+# Compare execution time and ts_end - ts_start
+# Get ts_end - ts_start
+# data_whole["ts_diff"] = (data_whole$ts_end - data_whole$ts_start) / MS_TO_NS
+# plot(runtime_whole, col="red")
+# lines(data_whole["ts_diff"], col="blue")
+
+# Check stationary
+df_ts <- ts(runtime_whole, start = 1)
+plot(df_ts)
+print(pacf(df_ts))
