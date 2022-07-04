@@ -29,14 +29,17 @@ comparative_test_single <- function(dataset_root, task_name) {
     df_whole <- load_data(file_whole, finish_only = TRUE, round = TRUE) # Only compare the finished runs in comparative tests
     df_solo <- load_data(file_solo, finish_only = TRUE, round = TRUE)
     
-    # TODO: allign whole and solo based on the length of solo mode result!
+    # 2. Align whole data with solo data
     len_whole <- length(df_whole[, 1])
     len_solo <- length(df_solo[, 1])
-    print(len_whole)
-    print(len_solo)
-    df_whole <- df_whole[1 + len_whole - len_solo:len_whole, ]
+        print(length(df_whole[, 1]))
+    print(length(df_solo[, 1]))
+    df_whole <- df_whole[(len_whole - len_solo + 1):len_whole, ]
+    print(length(df_whole[, 1]))
+    print(length(df_solo[, 1]))
 
-    # 2. Get coressponding time serieses
+
+    # 3. Get coressponding time serieses
     et_whole <- df_whole$execution_time # et = exectution time
     et_solo <- df_solo$execution_time # et = exectution time
     ts_whole <- ts(et_whole, start = 1)
