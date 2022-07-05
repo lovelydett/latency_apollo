@@ -11,11 +11,10 @@ source("utils/theme_publication.R")
 options(scipen = 999)
 library("ggplot2")
 
-tiff("test.tiff", units = "in", width = 10, height = 5, res = 300)
-png("test.png", units = "in", width = 10, height = 5, res = 300)
+tiff("test.tiff", units = "in", width = 12, height = 5, res = 300)
+png("test.png", units = "in", width = 12, height = 5, res = 300)
 
 df <- load_data("../data/dataset1/1/whole/prediction.csv", finish_only = TRUE, round = TRUE)
-df <- cbind(id = c(1 : length(df[, 1])), df)
 
 # Init ggplot
 g <- ggplot(df, aes(x = id, y = execution_time, color = component))

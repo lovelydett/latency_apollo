@@ -13,12 +13,14 @@ setwd("/home/tt/Codes/latency_apollo/scripts")
 # Tools
 source("./utils/constants.R")
 source("./utils/load_data.R")
+source("./utils/theme_publication.R")
 
 # Packages
 library("stats")
+library("ggplot2")
 
 # Turn E-Epress off
-options(scipen=999)
+options(scipen = 999)
 
 DATA_SETS = c('1', '2', '3', '4', '5', '6')
 
@@ -48,10 +50,21 @@ comparative_test_single <- function(dataset_root, task_name) {
     ts_whole <- ts(et_whole, start = 1)
     ts_solo <- ts(et_solo, start = 1)
     ts_diff <- ts(et_whole - et_solo, start = 1)
-    if (1) {
+    if (0) {
         plot(ts_whole, col = "red")
         lines(ts_solo, col = "blue")
         lines(ts_diff, col = "green")
+    }
+
+    if (1) {
+        g <- ggplot(df, aes(x = id, y = execution_time, color = component))
+        g <- g + geom_line()
+        g <- g + geom_point()
+        g <- g + coord_cartesian(xlim = c(1, 1000), ylim = c(1, 70))
+        g <- g + labs(title = "Title", subtitle = "Sub title", x = "X label", y = "Y label")
+        g <- g + scale_x_continuous(breaks = seq(0, 1000, 100))
+        g <- g + scale_y_continuous(breaks = seq(0, 75, 10), , labels = function(x) {paste0(x, ' ms')})
+        plot(g)
     }
 
     # 3. Mean and Var for both modes

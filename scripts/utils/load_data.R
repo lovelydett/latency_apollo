@@ -13,5 +13,10 @@ load_data <- function(filename, finish_only=FALSE, round=FALSE) {
         ma <- max(df[df$execution_time < LATENCY_UB_MS, "execution_time"])
         df[df$execution_time >= LATENCY_UB_MS, "execution_time"] <- ma + rnorm(1, 0, 3)
     }
+    # Add id field for data frame
+    df <- cbind(id = c(1 : length(df[, 1])), df)
+
+    # TODO: (yuting) add testing mode (whole/solo) for distinguish
+    
     return(df)
 }
