@@ -9,7 +9,7 @@ NS_TO_MS <- 1e-6
 S_TO_MS <- 1e3
 
 # Thresholds
-LATENCY_UB_MS <- 200
+LATENCY_UB_MS <- 100
 
 # Tasks
 TASKS <- c(

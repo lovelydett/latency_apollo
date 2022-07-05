@@ -11,7 +11,7 @@ load_data <- function(filename, finish_only=FALSE, round=FALSE) {
     }
     if (round) {
         ma <- max(df[df$execution_time < LATENCY_UB_MS, "execution_time"])
-        df[df$execution_time >= LATENCY_UB_MS, "execution_time"] <- ma
+        df[df$execution_time >= LATENCY_UB_MS, "execution_time"] <- ma + rnorm(1, 0, 3)
     }
     return(df)
 }
