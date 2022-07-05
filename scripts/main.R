@@ -20,8 +20,8 @@
 #   4.4 GP model to fit the whole graph
 
 # setwd("d:\\Codes\\latency_apollo\\scripts")
-# setwd("/Users/yuting/Codes/latency_apollo/scripts")
-setwd("/home/tt/Codes/latency_apollo/scripts")
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
+# setwd("/home/tt/Codes/latency_apollo/scripts")
 
 # Avoid scientific notion
 options(scipen = 100)

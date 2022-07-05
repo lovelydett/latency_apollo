@@ -2,7 +2,13 @@
 # Yuting Xie
 # 2022.7.4
 
-setwd("/home/tt/Codes/latency_apollo/scripts")
+# Main goals:
+# 1. Compare the raw latency serieses from whole (W) and solo (S) mode with basic stats.
+# 2. Conduct TSA on diff (W - S) for each individual component, to prove a stationary contention effect.
+# 3. Compare all diff (W - S) from different components, to reveal different degrees of contention. 
+
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
+# setwd("/home/tt/Codes/latency_apollo/scripts")
 
 # Tools
 source("./utils/constants.R")
@@ -30,27 +36,28 @@ comparative_test_single <- function(dataset_root, task_name) {
     df_solo <- load_data(file_solo, finish_only = TRUE, round = TRUE)
     
     # 2. Align whole data with solo data
-    len_whole <- length(df_whole[, 1])
-    len_solo <- length(df_solo[, 1])
-        print(length(df_whole[, 1]))
-    print(length(df_solo[, 1]))
-    df_whole <- df_whole[(len_whole - len_solo + 1):len_whole, ]
-    print(length(df_whole[, 1]))
-    print(length(df_solo[, 1]))
-
+    # TODO: (yuting) measure lag for every result and save as file, or make a more smart way of alignment with timestamps.
+    df_whole <- align_with_lag(df_whole, df_solo, 15)
 
     # 3. Get coressponding time serieses
     et_whole <- df_whole$execution_time # et = exectution time
     et_solo <- df_solo$execution_time # et = exectution time
-    ts_whole <- ts(et_whole, start = 1)
-    ts_solo <- ts(et_solo, start = 1)
+    ts_whole <- ts(et_whole[200:250], start = 1)
+    ts_solo <- ts(et_solo[200:250], start = 1)
     if (1) {
         plot(ts_whole, col = "red")
         lines(ts_solo, col = "blue")
     }
 
     # 3. Mean and Var for both modes
+}
 
+# Align whole with solo plus a lag (+ for right, - for left)
+align_with_lag <- function(df_whole, df_solo, lag = 0) {
+    len_whole <- length(df_whole[, 1])
+    len_solo <- length(df_solo[, 1])
+    df_whole <- df_whole[(len_whole - len_solo + 1 - lag):len_whole, ]
+    return(df_whole)
 }
 
 # comparative_test_all()
