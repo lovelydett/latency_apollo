@@ -21,7 +21,7 @@ load_data <- function(filename, finish_only = FALSE, round = FALSE) {
     df <- cbind(id = c(1 : length(df[, 1])), df)
 
     if (FLAG_USE_SMOOTH) {
-        df$execution_time = smooth(df$execution_time)
+        df$execution_time <- smooth(df$execution_time)
     }
     
     return(df)

@@ -31,24 +31,21 @@ theme_Publication <- function(base_size=14, base_family="helvetica") {
                strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
                strip.text = element_text(face="bold")
           ))
-      
 }
 
 scale_fill_Publication <- function(...){
       library(scales)
       discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
-
 }
 
 scale_colour_Publication <- function(...){
       library(scales)
       discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
-
 }
 
-my_plot <- function(g, name) {
+my_plot <- function(g, name = "", width = 12, height = 5) {
       # Set image save
-      png(paste0("../result_img/", name, ".png"), units = "in", width = 12, height = 5, res = 300)
+      png(paste0("../result_img/", name, ".png"), units = "in", width = width, height = height, res = 300)
       plot(g)
       dev.off()
 }

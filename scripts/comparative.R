@@ -21,6 +21,7 @@ library("stats")
 library("ggplot2")
 library("assert")
 library("gridExtra")
+library("cowplot")
 
 # Turn E-Epress off
 options(scipen = 999)
@@ -86,6 +87,7 @@ comparative_test_single <- function(dataset_root, task_name) {
 comparative_box_plots <- function() {
     dataset_str <- "5"
 
+    ###### Box plots for GPU components ######
     # Prediction
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/prediction.csv"), finish_only = TRUE, round = TRUE)
     df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/prediction.csv"), finish_only = TRUE, round = TRUE)
@@ -94,7 +96,8 @@ comparative_box_plots <- function() {
     df <- rbind(df_whole, df_solo)
     g_pred <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
     g_pred <- g_pred + geom_boxplot(notch = TRUE)
-    g_pred <- g_pred + scale_colour_Publication() + theme_Publication()
+    g_pred <- g_pred + labs(title = "Prediction", x = "", y = "Execution time (ms)")
+    g_pred <- g_pred + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Trafficlight
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/trafficlight.csv"), finish_only = TRUE, round = TRUE)
@@ -104,7 +107,8 @@ comparative_box_plots <- function() {
     df <- rbind(df_whole, df_solo)
     g_tl <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
     g_tl <- g_tl + geom_boxplot(notch = TRUE)
-    g_tl <- g_tl + scale_colour_Publication() + theme_Publication()
+    g_tl <- g_tl + labs(title = "Traffic light", x = "", y = "")
+    g_tl <- g_tl + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Lane
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/lane.csv"), finish_only = TRUE, round = TRUE)
@@ -114,17 +118,19 @@ comparative_box_plots <- function() {
     df <- rbind(df_whole, df_solo)
     g_lane <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
     g_lane <- g_lane + geom_boxplot(notch = TRUE)
-    g_lane <- g_lane + scale_colour_Publication() + theme_Publication()
+    g_lane <- g_lane + labs(title = "Lane", x = "", y = "")
+    g_lane <- g_lane + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Detection
-    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/detection.csv"), finish_only = TRUE, round = TRUE)
-    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/detection.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/detection.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/detection.csv"), finish_only = TRUE, round = TRUE)
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
     df <- rbind(df_whole, df_solo)
     g_detection <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
     g_detection <- g_detection + geom_boxplot(notch = TRUE)
-    g_detection <- g_detection + scale_colour_Publication() + theme_Publication()
+    g_detection <- g_detection + labs(title = "Detection", x = "", y = "")
+    g_detection <- g_detection + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Camera fusion
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/fusion_camera.csv"), finish_only = TRUE, round = TRUE)
@@ -134,26 +140,137 @@ comparative_box_plots <- function() {
     df <- rbind(df_whole, df_solo)
     g_fusion_camera <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
     g_fusion_camera <- g_fusion_camera + geom_boxplot(notch = TRUE)
-    g_fusion_camera <- g_fusion_camera + scale_colour_Publication() + theme_Publication()
+    g_fusion_camera <- g_fusion_camera + labs(title = "Camera", x = "", y = "")
+    g_fusion_camera <- g_fusion_camera + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Recognition
-    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/recognition.csv"), finish_only = TRUE, round = TRUE)
-    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/recognition.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/recognition.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/recognition.csv"), finish_only = TRUE, round = TRUE)
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
     df <- rbind(df_whole, df_solo)
     g_recognition <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
     g_recognition <- g_recognition + geom_boxplot(notch = TRUE)
-    g_recognition <- g_recognition + scale_colour_Publication() + theme_Publication()
+    g_recognition <- g_recognition + labs(title = "Recognition", x = "", y = "")
+    g_recognition <- g_recognition + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Plot all GPU components
-    g <- grid.arrange(g_pred, g_detection, g_fusion_camera, g_lane, g_tl, g_recognition,
+    if (0) {
+        g <- grid.arrange(g_pred, g_detection, g_fusion_camera, g_lane, g_tl, g_recognition,
              ncol = 3, nrow = 2)
-    my_plot(g, "GPU")
+        my_plot(g, "GPU_box", width = 15, height = 10)
+    }
+
+
+    ###### Box plots for CPU components ######
+    dataset_str <- "2"
+    # Planning
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/planning.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/planning.csv"), finish_only = TRUE, round = TRUE)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_planning <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
+    g_planning <- g_planning + geom_boxplot(notch = TRUE)
+    g_planning <- g_planning + labs(title = "Planning", x = "", y = "Execution time (ms)")
+    g_planning <- g_planning + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+
+    # Radar
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/radar.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/radar.csv"), finish_only = TRUE, round = TRUE)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_radar <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
+    g_radar <- g_radar + geom_boxplot(notch = TRUE)
+    g_radar <- g_radar + labs(title = "Radar", x = "", y = "")
+    g_radar <- g_radar + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+
+    # Control
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/control.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/control.csv"), finish_only = TRUE, round = TRUE)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_control <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
+    g_control <- g_control + geom_boxplot(notch = TRUE)
+    g_control <- g_control + labs(title = "Control", x = "", y = "")
+    g_control <- g_control + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+
+    # Fusion
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/fusion.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/fusion.csv"), finish_only = TRUE, round = TRUE)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_fusion <- ggplot(df, aes(x = mode, y = execution_time, colour = mode))
+    g_fusion <- g_fusion + geom_boxplot(notch = TRUE)
+    g_fusion <- g_fusion + labs(title = "Fusion", x = "", y = "")
+    g_fusion <- g_fusion + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+
+    # Plot all CPU components
+    if (0) {
+        g <- grid.arrange(g_planning, g_control, g_fusion, g_radar, ncol = 2, nrow = 2)
+        my_plot(g, "CPU_box", width = 10, height = 10)
+    }
+
+    ######### Series plots for prediction, fusion camera and radar
+    dataset_str <- "6"
+    len <- 300
+    seg_start <- 300
+    # traffic light
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/trafficlight.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/trafficlight.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- align_with_lag(df_whole, df_solo, lag = 10)
+    df_whole <- segment_df(df_whole, start = 400, len = len)
+    df_solo <- segment_df(df_solo, start = 400, len = len)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_trafficlight <- ggplot(df, aes(x = id, y = execution_time, colour = mode))
+    g_trafficlight <- g_trafficlight + geom_line()
+    g_trafficlight <- g_trafficlight + geom_point()
+    g_trafficlight <- g_trafficlight + labs(title = "Traffic light", subtitle = "(CPU-GPU)", x = "", y = "")
+    g_trafficlight <- g_trafficlight + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
     
+    # prediction
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/prediction.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/prediction.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- align_with_lag(df_whole, df_solo, lag = 16)
+    df_whole <- segment_df(df_whole, start = 150, len = len)
+    df_solo <- segment_df(df_solo, start = 150, len = len)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_prediction <- ggplot(df, aes(x = id, y = execution_time, colour = mode))
+    g_prediction <- g_prediction + geom_line()
+    g_prediction <- g_prediction + geom_point()
+    g_prediction <- g_prediction + labs(title = "Prediction", subtitle = "(CPU-GPU)", x = "", y = "Execution time (ms)")
+    g_prediction <- g_prediction + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+
+    # radar
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/radar.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/radar.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- align_with_lag(df_whole, df_solo, lag = 25)
+    df_whole <- segment_df(df_whole, start = 300, len = len)
+    df_solo <- segment_df(df_solo, start = 300, len = len)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_radar <- ggplot(df, aes(x = id, y = execution_time, colour = mode))
+    g_radar <- g_radar + geom_line()
+    g_radar <- g_radar + geom_point()
+    g_radar <- g_radar + labs(title = "Radar", subtitle = "(CPU only)", x = "Input Sequence", y = "")
+    g_radar <- g_radar + scale_colour_Publication() + theme_Publication() + theme(legend.position = "bottom", legend.title = element_blank())
+
+    # Plot series graph for prediction and radar
+    if (1) {
+        g <- grid.arrange(g_prediction, g_trafficlight, g_radar, ncol = 1, nrow = 3)
+        my_plot(g, "Series", width = 20, height = 10)
+    }
 }
 
-# Align whole with solo plus a lag (+ for right, - for left)
+# Align whole with solo plus a lag
 align_with_lag <- function(df_whole, df_solo, lag = 0) {
     len_whole <- length(df_whole[, 1])
     len_solo <- length(df_solo[, 1])
@@ -161,6 +278,18 @@ align_with_lag <- function(df_whole, df_solo, lag = 0) {
     # Correct id after alignment
     df_whole$id <- df_whole$id - df_whole[1, "id"] + 1
     return(df_whole)
+}
+
+compute_stats <- function(df_whole, df_solo) {
+    
+}
+
+segment_df <- function(df, start = 1, len = 200) {
+    if (nrow(df) < len) {
+        return(df)
+    }
+    df$id <- df$id - start + 1
+    return(df[start:(start + len), ])
 }
 
 # comparative_test_all()
