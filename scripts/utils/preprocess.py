@@ -6,7 +6,9 @@ from numpy import save
 import pandas as pd
 import os
 
-os.chdir("/home/tt/Codes/latency_apollo/scripts/utils/")
+# setwd("/Users/yuting/Codes/latency_apollo/scripts")
+# setwd("/home/tt/Codes/latency_apollo/scripts")
+os.chdir("D:\\Codes\\latency_apollo\\scripts")
 
 TASKS = {
     "RTKLocalizationComponent::Proc" : "localization",
@@ -46,7 +48,7 @@ def isolate_perception(data):
     return task_to_data
 
 def rename_all(dataset_name):
-    dir = "../../data/" + dataset_name
+    dir = "../data/" + dataset_name
     for root, dirs, files in os.walk(dir):
         for file in files:
             if file.replace(".csv", '') in TASKS.values():
@@ -64,4 +66,4 @@ def rename_all(dataset_name):
 
 
 if __name__ == "__main__":
-    rename_all("dataset1")
+    rename_all("dataset2_driving_info")

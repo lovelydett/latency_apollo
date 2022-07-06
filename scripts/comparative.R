@@ -22,6 +22,7 @@ library("ggplot2")
 library("assert")
 library("gridExtra")
 library("cowplot")
+library("ggstatsplot")
 
 # Turn E-Epress off
 options(scipen = 999)
@@ -90,7 +91,9 @@ comparative_box_plots <- function() {
     ###### Box plots for GPU components ######
     # Prediction
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/prediction.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- remove_outliers(df_whole)
     df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/prediction.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- remove_outliers(df_solo)
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
     df <- rbind(df_whole, df_solo)
@@ -112,7 +115,9 @@ comparative_box_plots <- function() {
 
     # Lane
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/lane.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- remove_outliers(df_whole)
     df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/lane.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- remove_outliers(df_solo)
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
     df <- rbind(df_whole, df_solo)
@@ -134,7 +139,9 @@ comparative_box_plots <- function() {
 
     # Camera fusion
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/fusion_camera.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- remove_outliers(df_whole)
     df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/fusion_camera.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- remove_outliers(df_solo)
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
     df <- rbind(df_whole, df_solo)
@@ -155,7 +162,7 @@ comparative_box_plots <- function() {
     g_recognition <- g_recognition + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Plot all GPU components
-    if (0) {
+    if (1) {
         g <- grid.arrange(g_pred, g_detection, g_fusion_camera, g_lane, g_tl, g_recognition,
              ncol = 3, nrow = 2)
         my_plot(g, "GPU_box", width = 15, height = 10)
@@ -177,6 +184,7 @@ comparative_box_plots <- function() {
 
     # Radar
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/radar.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- remove_outliers(df_whole)
     df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/radar.csv"), finish_only = TRUE, round = TRUE)
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
@@ -209,7 +217,7 @@ comparative_box_plots <- function() {
     g_fusion <- g_fusion + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # Plot all CPU components
-    if (0) {
+    if (1) {
         g <- grid.arrange(g_planning, g_control, g_fusion, g_radar, ncol = 2, nrow = 2)
         my_plot(g, "CPU_box", width = 10, height = 10)
     }
@@ -281,7 +289,17 @@ align_with_lag <- function(df_whole, df_solo, lag = 0) {
 }
 
 compute_stats <- function(df_whole, df_solo) {
-    
+    # First get diff and diff_portion
+
+}
+
+remove_outliers <- function(df) {
+    Q <- quantile(df$execution_time, probs = c(.25, .75), na.rm = FALSE)
+    iqr <- IQR(df$execution_time)
+    ub <- Q[2] + 1.5 * iqr
+    lb <- Q[1] - 1.5 * iqr
+    df <- subset(df, df$execution_time > lb & df$execution_time < ub)
+    return(df)
 }
 
 segment_df <- function(df, start = 1, len = 200) {
