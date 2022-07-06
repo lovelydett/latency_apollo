@@ -2,8 +2,12 @@
 # Yuting Xie
 # 2022.7.4
 
+library("stats")
+
+source("./utils/constants.R")
+
 # Load data from csv, change latency into ms
-load_data <- function(filename, finish_only=FALSE, round=FALSE) {
+load_data <- function(filename, finish_only = FALSE, round = FALSE) {
     df <- read.csv(filename, header = TRUE,  sep = ',',  stringsAsFactors = FALSE)
     df$execution_time <- df$execution_time * NS_TO_MS
     if (finish_only) {
@@ -16,7 +20,9 @@ load_data <- function(filename, finish_only=FALSE, round=FALSE) {
     # Add id field for data frame
     df <- cbind(id = c(1 : length(df[, 1])), df)
 
-    # TODO: (yuting) add testing mode (whole/solo) for distinguish
+    if (FLAG_USE_SMOOTH) {
+        df$execution_time = smooth(df$execution_time)
+    }
     
     return(df)
 }

@@ -22,3 +22,6 @@ TASKS <- c(
     "prediction",
     "control"
 )
+
+# Flags
+FLAG_USE_SMOOTH = TRUE
