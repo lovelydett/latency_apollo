@@ -26,3 +26,13 @@ load_data <- function(filename, finish_only = FALSE, round = FALSE, is_smooth = 
     
     return(df)
 }
+
+# Align whole with solo plus a lag
+align_with_lag <- function(df_whole, df_solo, lag = 0) {
+    len_whole <- length(df_whole[, 1])
+    len_solo <- length(df_solo[, 1])
+    df_whole <- df_whole[(len_whole - len_solo + 1 - lag):(len_whole - lag), ]
+    # Correct id after alignment
+    df_whole$id <- df_whole$id - df_whole[1, "id"] + 1
+    return(df_whole)
+}
