@@ -136,12 +136,12 @@ correlation_between_components <- function(df1, df2, task_name1, task_name2) {
     my_plot(g_pacf, name = paste0("CCF_", task_name1, "_", task_name2), height = 5, width = 5)
 }
 
-df <- load_data("../data/dataset2_driving_info/1/prediction.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
-# driving_info_correlation(df, "Prediction", coeff = 10, info_name = "Number of Obstacles")
+df <- load_data("../data/dataset2_driving_info/1/fusion.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
+driving_info_correlation(df, "Fusion", coeff = 0.25, info_name = "Number of Obstacles")
 # white_noise_test(df, "Prediction")
 
 df2 <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
 
-correlation_between_components(df, df2, "Prediction", "Planning")
+# correlation_between_components(df, df2, "Prediction", "Planning")
 
 dev.off()

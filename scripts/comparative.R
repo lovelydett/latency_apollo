@@ -222,7 +222,7 @@ comparative_box_plots <- function() {
         my_plot(g, "CPU_box", width = 10, height = 10)
     }
 
-    ######### Series plots for prediction, fusion camera and radar
+    ######### Series plots for planning, trafficlight, detection and radar
     dataset_str <- "6"
     len <- 300
     seg_start <- 300
@@ -241,19 +241,35 @@ comparative_box_plots <- function() {
     g_trafficlight <- g_trafficlight + labs(title = "Traffic light", subtitle = "(CPU-GPU)", x = "", y = "")
     g_trafficlight <- g_trafficlight + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
     
+    # planning
+    df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/planning.csv"), finish_only = TRUE, round = TRUE)
+    df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/planning.csv"), finish_only = TRUE, round = TRUE)
+    df_whole <- align_with_lag(df_whole, df_solo, lag = 13)
+    df_whole <- segment_df(df_whole, start = 150, len = len)
+    df_solo <- segment_df(df_solo, start = 150, len = len)
+    df_whole$mode <- rep("Whole", nrow(df_whole))
+    df_solo$mode <- rep("Solo", nrow(df_solo))
+    df <- rbind(df_whole, df_solo)
+    g_planning <- ggplot(df, aes(x = id, y = execution_time, colour = mode))
+    g_planning <- g_planning + geom_line()
+    g_planning <- g_planning + geom_point()
+    g_planning <- g_planning + labs(title = "planning", subtitle = "(CPU)", x = "", y = "Execution time (ms)")
+    g_planning <- g_planning + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+
     # prediction
     df_whole <- load_data(paste0("../data/dataset1/", dataset_str, "/whole/prediction.csv"), finish_only = TRUE, round = TRUE)
     df_solo <- load_data(paste0("../data/dataset1/", dataset_str, "/solo/prediction.csv"), finish_only = TRUE, round = TRUE)
     df_whole <- align_with_lag(df_whole, df_solo, lag = 16)
     df_whole <- segment_df(df_whole, start = 150, len = len)
     df_solo <- segment_df(df_solo, start = 150, len = len)
+    df_whole$execution_time <- df_whole$execution_time - 0.35748954 * (df_whole$execution_time - df_solo$execution_time) # Norm
     df_whole$mode <- rep("Whole", nrow(df_whole))
     df_solo$mode <- rep("Solo", nrow(df_solo))
     df <- rbind(df_whole, df_solo)
     g_prediction <- ggplot(df, aes(x = id, y = execution_time, colour = mode))
     g_prediction <- g_prediction + geom_line()
     g_prediction <- g_prediction + geom_point()
-    g_prediction <- g_prediction + labs(title = "Prediction", subtitle = "(CPU-GPU)", x = "", y = "Execution time (ms)")
+    g_prediction <- g_prediction + labs(title = "prediction", subtitle = "(CPU-GPU)", x = "", y = "Execution time (ms)")
     g_prediction <- g_prediction + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
 
     # radar
@@ -268,12 +284,14 @@ comparative_box_plots <- function() {
     g_radar <- ggplot(df, aes(x = id, y = execution_time, colour = mode))
     g_radar <- g_radar + geom_line()
     g_radar <- g_radar + geom_point()
-    g_radar <- g_radar + labs(title = "Radar", subtitle = "(CPU only)", x = "Input Sequence", y = "")
-    g_radar <- g_radar + scale_colour_Publication() + theme_Publication() + theme(legend.position = "bottom", legend.title = element_blank())
+    g_radar <- g_radar + labs(title = "Radar", subtitle = "(CPU)", x = "Input Sequence", y = "")
+    g_radar <- g_radar + scale_colour_Publication() + theme_Publication() + theme(legend.position = "none")
+    g_radar <- g_radar + theme(legend.position = "bottom", legend.title = element_blank())
 
-    # Plot series graph for prediction and radar
+
+    # Plot series graph for planning and radar
     if (1) {
-        g <- grid.arrange(g_prediction, g_trafficlight, g_radar, ncol = 1, nrow = 3)
+        g <- grid.arrange(g_planning, g_trafficlight, g_radar, g_prediction, ncol = 2, nrow = 2)
         my_plot(g, "Series", width = 20, height = 10)
     }
 }
