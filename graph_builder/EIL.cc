@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <queue>
 #include <unordered_map>
 
 // Relationships
@@ -62,7 +63,7 @@ typedef struct EdgeWithType {
     EdgeWithType(int dest, enum EdgeType type) : dest(dest), type(type) {}
 } Edge;
 
-// Given channel set M and the number of tasks n
+// Input: channel set M and the number of tasks n
 std::vector<std::unordered_map<int, enum EdgeType>> build_graph(const std::vector<std::vector<std::array<int, 2>>> &M, int n) {
     // Phase 1: build a base graph with only the task edges, and ready-states and finish-states for each task.
     std::vector<std::unordered_map<int, enum EdgeType>> adjList; // For RVO
@@ -106,6 +107,21 @@ std::vector<std::unordered_map<int, enum EdgeType>> build_graph(const std::vecto
 
     // Phase 3 (optional): combine redundent states
     return adjList;
+}
+
+// Input: 
+float EIL(const std::vector<std::unordered_map<int, enum EdgeType>> &adjList, 
+          std::vector<float> &sensor_nxt, 
+          const std::vector<float> &E,
+          const int sensor_generated,
+          const float t_now) {
+    int m = adjList.size() - 1; // The number of states (vertexes)
+    int n = m / 2; // The number of tasks
+    
+    // Set the sensor_of_interest entry state as 0 to reveal the  
+    int SOI = 
+
+    // Start from every w
 }
 
 int main() {
