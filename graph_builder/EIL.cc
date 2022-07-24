@@ -7,6 +7,7 @@
 #include <array>
 #include <queue>
 #include <unordered_map>
+#include <cassert>
 
 // Relationships
 enum Relationship {
@@ -21,7 +22,10 @@ enum EdgeType {
     NONE = 0,
     TASK,
     SYNC_HARD,
-    SYNC_SOFT
+    SYNC_SOFT,
+    TASK_FROM,
+    SYNC_HARD_FROM,
+    SYNC_SOFT_FROM
 };
 
 // Example system:
@@ -62,6 +66,12 @@ typedef struct EdgeWithType {
     EdgeWithType() : dest(-1), type(NONE) {}
     EdgeWithType(int dest, enum EdgeType type) : dest(dest), type(type) {}
 } Edge;
+
+typedef struct Vertex {
+    float ts_ms; // Latest estimated ts_ms for the very next happen
+    std::vector<Edge> edges_out;
+    std::vector<Edge> edges_in;
+} Node;
 
 // Input: channel set M and the number of tasks n
 std::vector<std::unordered_map<int, enum EdgeType>> build_graph(const std::vector<std::vector<std::array<int, 2>>> &M, int n) {
@@ -109,19 +119,86 @@ std::vector<std::unordered_map<int, enum EdgeType>> build_graph(const std::vecto
     return adjList;
 }
 
-// Input: 
-float EIL(const std::vector<std::unordered_map<int, enum EdgeType>> &adjList, 
-          std::vector<float> &sensor_nxt, 
+// Key point: every finish task must reset its corresponding value in E!!
+// Inputs: 
+// 1. Graph model in adj-list with latest timestamps
+// 2. Next generation time for all sensors
+// 3. Current estimation execution time for each task
+// 4. Id of sensor of interest this time
+// 5. Ids of states for exits (suppose only one exit for now)
+float EIL(std::vector<Node> &adjList, 
+          const std::unordered_map<int, float> &sensor_nxt,  
           const std::vector<float> &E,
-          const int sensor_generated,
-          const float t_now) {
+          const int SOI,
+          const std::vector<int> &SOE) {
     int m = adjList.size() - 1; // The number of states (vertexes)
     int n = m / 2; // The number of tasks
-    
-    // Set the sensor_of_interest entry state as 0 to reveal the  
-    int SOI = 
 
-    // Start from every w
+    // Start from every input sensors EXCEPT SOI, ts-BFS in each direction until first state with -1 value
+    for (auto &it : sensor_nxt) {
+        if (it.first == SOI) {
+            continue;
+        }
+        adjList[it.first].ts_ms = it.second; // Next values for sensor states are guaranteed to be updated!
+        std::queue<int> q;
+        q.push(it.first);
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            // Process all out edges                                                               
+            for (auto &[dest, type] : adjList[cur].edges_out) {
+                if (adjList[dest].ts_ms > 0 && adjList[cur].ts_ms > adjList[dest].ts_ms
+                     || type == SYNC_SOFT) {
+                    // Indicate we still have an on-the-way piece of information, 
+                    // or the happening of next state is not affected by current state, abort this path!
+                    continue;
+                }
+                if (type == TASK) {
+                    // For task edge, simply update the ts_ms for it (task id is always state id / 2)
+                    adjList[dest].ts_ms = adjList[cur].ts_ms + E[cur / 2];
+                    q.push(dest);
+                } else if (type == SYNC_HARD) {
+                    if (adjList[cur].ts_ms < adjList[dest].ts_ms) {
+                        // Current state is fast, not affecting subsequent states, can abort this path!
+                        continue;
+                    }
+                    adjList[dest].ts_ms = adjList[cur].ts_ms;
+                    q.push(dest);
+                } else {
+                    assert(false);
+                }
+
+            }
+        }
+    }
+
+    // Start from SOI, do ts-BFS that WONT STOP at state with ts > 0
+    std::queue<int> q;
+    q.push(SOI);
+    while (!q.empty()) {
+        int cur = q.front();
+        q.pop();
+        for (auto &[dest, type] : adjList[cur].edges_out) {
+            if (type == TASK) {
+                adjList[dest].ts_ms = adjList[cur].ts_ms + E[cur / 2];
+                q.push(dest);
+            } else if (type == SYNC_HARD && adjList[dest].ts_ms < adjList[cur].ts_ms) {
+                adjList[dest].ts_ms = adjList[cur].ts_ms;
+                q.push(dest);
+            } else if (type == SYNC_SOFT) {
+                // TODO: deal with the case that next state is expected to happen, but not yet happend!
+                // By add one more 1/freq ? I dont know.
+                continue;
+            }
+        }
+    }
+
+    // The final result is the diff of ts at SOE(s) and ts at SOI 
+    return E[SOE[0]] - E[SOI];
+}
+
+void test_EIL() {
+    
 }
 
 int main() {
