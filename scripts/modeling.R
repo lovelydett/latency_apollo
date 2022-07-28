@@ -97,4 +97,8 @@ control_exit_latency <- function(filename) {
         my_plot(g, "E2E", width = 20, height = 5)
 }
 
+graph_builder <- function(channels) {
+    
+}
+
 control_exit_latency("../data/dataset1/1/whole/control.csv")

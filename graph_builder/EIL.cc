@@ -175,12 +175,12 @@ float EIL(std::vector<Node> &adjList,
                 adjList[dest].max_period = std::max(adjList[dest].max_period, adjList[cur_id].max_period);
                 std::cout << "Updating " << dest << " with " << cur_id << " for TASK to " << adjList[dest].ts_ms << std::endl;
                 DFS_1(dest);
-            } else if (type == BLOCKING) {
-                adjList[dest].max_period = std::max(adjList[dest].max_period, adjList[cur_id].max_period);                    
+            } else if (type == BLOCKING) { 
                 if (adjList[cur_id].ts_ms < adjList[dest].ts_ms) {
                     // Current state is fast, not affecting subsequent states, can abort this path!
                     continue;
                 }
+                adjList[dest].max_period = std::max(adjList[dest].max_period, adjList[cur_id].max_period);                   
                 adjList[dest].ts_ms = adjList[cur_id].ts_ms;
                 std::cout << "Updating " << dest << " with " << cur_id << " for BLOCKING to " << adjList[dest].ts_ms << std::endl;
                 DFS_1(dest);

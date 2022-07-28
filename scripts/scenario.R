@@ -47,8 +47,9 @@ white_noise_test <- function(df, task_name) {
     lim1 <- qnorm((1 + (1 - 0.05)) / 2) / sqrt(ts_et.acf$n.used)
     lim0 <- -1 * lim1
     g_acf <- ggplot(df_acf, mapping = aes(x = lag, y = acf)) +
+        geom_bar(stat = "identity", colour = "#c554b6") +
         geom_hline(aes(yintercept = 0)) +
-        geom_segment(mapping = aes(xend = lag, yend = 0)) +
+        # geom_segment(mapping = aes(xend = lag, yend = 0)) +
         geom_hline(aes(yintercept = lim1), linetype = 2, colour = "#386cb0") +
         geom_hline(aes(yintercept = lim0), linetype = 2, colour = "#386cb0") +
         labs(x = "Lag", y = "ACF") +
@@ -57,8 +58,9 @@ white_noise_test <- function(df, task_name) {
     lim1 <- qnorm((1 + (1 - 0.05)) / 2) / sqrt(ts_et.pacf$n.used)
     lim0 <- -1 * lim1
     g_pacf <- ggplot(df_pacf, mapping = aes(x = lag, y = acf)) +
+        geom_bar(stat = "identity", colour = "#c554b6") +
         geom_hline(aes(yintercept = 0)) +
-        geom_segment(mapping = aes(xend = lag, yend = 0)) +
+        # geom_segment(mapping = aes(xend = lag, yend = 0)) +
         geom_hline(aes(yintercept = lim1), linetype = 2, colour = "#386cb0") +
         geom_hline(aes(yintercept = lim0), linetype = 2, colour = "#386cb0") +
         labs(x = "Lag", y = "PACF") +
@@ -66,7 +68,7 @@ white_noise_test <- function(df, task_name) {
         theme_Publication()
 
     g <- grid.arrange(g_acf, g_pacf, ncol = 2, nrow = 1, top = textGrob(task_name, gp = gpar(fontsize = 20, font = 3, fill = "white")))
-    my_plot(g, name = paste0("ACF_PACF_", task_name), height = 5, width = 10)
+    my_plot(g, name = paste0("ACF_PACF_", task_name), height = 10, width = 10)
 }
 
 driving_info_correlation <- function(df, task_name, coeff = 10, info_name = "info") {
@@ -136,11 +138,11 @@ correlation_between_components <- function(df1, df2, task_name1, task_name2) {
     my_plot(g_pacf, name = paste0("CCF_", task_name1, "_", task_name2), height = 5, width = 5)
 }
 
-df <- load_data("../data/dataset2_driving_info/1/fusion.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
-driving_info_correlation(df, "Fusion", coeff = 0.25, info_name = "Number of Obstacles")
-# white_noise_test(df, "Prediction")
+df <- load_data("../data/dataset2_driving_info/2/detection.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
+# driving_info_correlation(df, "Fusion", coeff = 0.25, info_name = "Number of Obstacles")
+white_noise_test(df, "Detection")
 
-df2 <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
+# df2 <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
 
 # correlation_between_components(df, df2, "Prediction", "Planning")
 

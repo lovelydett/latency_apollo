@@ -20,7 +20,25 @@ TASKS <- c(
     "fusion_camera",
     "planning",
     "prediction",
-    "control"
+    "control",
+    "lane",
+    "localization",
+    "trafficlight"
+)
+
+MY_COLORS <- c(
+    "#2470a0",
+    "#DB2B39",
+    "#1f640a",
+    "#8E0C24",
+    "#475F77",
+    "#FF9C00",
+    "#7B3B8C",
+    "#00303F",
+    "#de4307",
+    "#393E41",
+    "#330000",
+    "#ED5485"
 )
 
 # Flags
