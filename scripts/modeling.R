@@ -10,9 +10,9 @@
 # 5. For each edge, judge the predicability.
 # 6. Incorporate the sensor freq to complete the prediction model.
 
-# setwd("/Users/yuting/Codes/latency_apollo/scripts")
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
 # setwd("/home/tt/Codes/latency_apollo/scripts")
-setwd("D:\\Codes\\latency_apollo\\scripts")
+# setwd("D:\\Codes\\latency_apollo\\scripts")
 
 # Tools
 source("./utils/constants.R")
@@ -58,7 +58,8 @@ control_exit_latency <- function(filename) {
         geom_line() + geom_point() +
         labs(title = "Information Vacuum Period for Control Command", x = "Control Command Sequence", y = "Period (ms)") +
         coord_cartesian(ylim = c(1, 300)) +
-        scale_colour_Publication() + theme_Publication() + theme(legend.title = element_blank())
+        scale_colour_Publication() +  theme_Publication() + 
+        theme(legend.title = element_blank())
     my_plot(g_lat, "IVP")
 
     # From the view of information processing time
@@ -89,7 +90,8 @@ control_exit_latency <- function(filename) {
         geom_line() + geom_point() +
         labs(title = "E2E Processing Time", x = "Raw sensor data sequence", y = "Latency (ms)") +
         coord_cartesian(ylim = c(1, 300)) +
-        scale_colour_Publication() + theme_Publication() + theme(legend.title = element_blank())
+        scale_colour_Publication() + theme_Publication() + 
+        theme(legend.title = element_blank())
     my_plot(g_process, "E2E_Process")
 
     # Plot g_lat and g_process in one graph

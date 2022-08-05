@@ -41,5 +41,13 @@ MY_COLORS <- c(
     "#ED5485"
 )
 
+# DQPs
+DQPS <- list(
+    list("planning", 4, 1, 0),
+    list("fusion", 15, 1, 0),
+    list("prediction", 4, 1, 0),
+    list("trafficlight", 7, 1, 0)
+)
+
 # Flags
 FLAG_USE_SMOOTH = TRUE

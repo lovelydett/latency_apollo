@@ -3,12 +3,14 @@
 library(ggplot2)
 library(gridExtra)
 
-theme_Publication <- function(base_size=14, base_family="helvetica") {
+lwd_pt <- .pt * 72.27 / 96
+
+theme_Publication <- function(base_size=20, base_family="Arial") {
       library(grid)
       library(ggthemes)
       (theme_foundation(base_size=base_size, base_family=base_family)
        + theme(plot.title = element_text(face = "bold",
-                                         size = rel(1.2), hjust = 0.5),
+                                         size = rel(1), hjust = 0.5),
                text = element_text(),
                panel.background = element_rect(colour = NA),
                plot.background = element_rect(colour = NA),
@@ -29,9 +31,9 @@ theme_Publication <- function(base_size=14, base_family="helvetica") {
                legend.key.size= unit(0.2, "cm"),
                legend.margin = unit(0, "cm"),
                legend.title = element_text(face="italic"),
-               plot.margin=unit(c(10,5,5,5),"mm"),
-               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
-               strip.text = element_text(face="bold")
+               plot.margin=unit(c(5 ,2 ,2 ,2 ),"mm"),
+               strip.background=element_rect(colour="#f0f0f0", fill="#f0f0f0"),
+               strip.text = element_text(face="bold"),
           ))
 }
 
