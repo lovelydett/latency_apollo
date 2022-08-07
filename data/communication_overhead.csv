@@ -1,0 +1,7 @@
+message,size,mean,sd
+LocalizationEstimate,290,4182545,468925
+PerceptionObstacles,4000,6781568,488403.18
+TrafficLightDetection,29,2658173,342425.27
+ADCTrajectory,49,5710534.4,399639.87
+PredictionObstacles,8000,1206540.8,58679.14
+PerceptionLanes,2500,9146181,27817
