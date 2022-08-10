@@ -101,7 +101,7 @@ control_exit_latency <- function(filename) {
         my_plot(g, "E2E", width = 20, height = 5)
     }
 
-    ### Do moving average directly on EIL, dont use!
+    ### Do moving average directly on EIL
     df_cam <- df_whole %>% select(ts_cam, lat_cam)
     df_lidar <- df_whole %>% select(ts_lidar, lat_lidar)
     df_radar <- df_whole %>% select(ts_radar, lat_radar)
@@ -113,7 +113,7 @@ control_exit_latency <- function(filename) {
     # print(head(df_cam))
 
     # plot(df_cam$lat_cam, df_cam$lat_cam_pred)
-    cor(df_cam$lat_cam, df_cam$lat_cam_pred, method = "pearson")
+    # cor(df_cam$lat_cam, df_cam$lat_cam_pred, method = "pearson")
 }
 
 graph_builder <- function(channels) {

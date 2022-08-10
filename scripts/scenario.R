@@ -8,8 +8,8 @@
 # 3. For related components, analyse the correlation.
 
 # setwd("/Users/yuting/Codes/latency_apollo/scripts")
-# setwd("/home/tt/Codes/latency_apollo/scripts")
-setwd("D:\\Codes\\latency_apollo\\scripts")
+setwd("/home/tt/Codes/latency_apollo/scripts")
+# setwd("D:\\Codes\\latency_apollo\\scripts")
 
 # Tools
 source("./utils/constants.R")
@@ -72,11 +72,13 @@ white_noise_test <- function(df, task_name) {
 }
 
 driving_info_correlation <- function(df, task_name, coeff = 10, info_name = "info") {
+    df <- df[300:600, ]
+    df$id <- df$id - 300
     ###### Plot correlation graph ######
     g <- ggplot(df, aes(x = info, y = execution_time))
     g <- g + geom_point()
     g <- g + geom_smooth(method = "lm")
-    g <- g + labs(title = task_name, x = info_name, y = "Execution time (ms)")
+    g <- g + labs(title = task_name, x = info_name, y = "")
     g <- g + scale_colour_Publication() + theme_Publication()
     my_plot(g, name = paste0("Correlation_", task_name), height = 5, width = 5)
 
@@ -94,15 +96,15 @@ driving_info_correlation <- function(df, task_name, coeff = 10, info_name = "inf
         values_to = "line_value"
     )
     g <- ggplot(df, aes(x = id, y = line_value, colour = line_type))
-    g <- g + geom_line()
-    g <- g + geom_point()
+    g <- g + geom_line(size = 1.5)
+    g <- g + geom_point(size = 3)
     g <- g + scale_y_continuous(
         name = "Execution time (ms)",
         sec.axis = sec_axis(~. / coeff, name = info_name)
     )
-    g <- g + labs(title = task_name, x = "Input Sequence")
-    g <- g + scale_color_grey(labels = c("execution_time" = "Execution time", "info" = info_name))
-    g <- g + theme_Publication() + theme(legend.title = element_blank())
+    g <- g + labs(title = task_name, x = "Input message sequence")
+    g <- g + scale_colour_Publication()
+    g <- g + theme_Publication() + theme(legend.title = element_blank(), legend.position = "none")
     my_plot(g, name = paste0("Scenario_", task_name))
 
 }
@@ -120,7 +122,7 @@ correlation_between_components <- function(df1, df2, task_name1, task_name2) {
         scale_colour_Publication() +
         theme_Publication() +
         theme(legend.title = element_blank())
-    my_plot(g, name = paste0("Corss_Correlation_", task_name1, "_", task_name2))
+    # my_plot(g, name = paste0("Corss_Correlation_", task_name1, "_", task_name2))
 
     # Cross correlation between components
     ccf_res <- ccf(df1$execution_time, df2$execution_time, lag = 10)
@@ -138,9 +140,9 @@ correlation_between_components <- function(df1, df2, task_name1, task_name2) {
     my_plot(g_pacf, name = paste0("CCF_", task_name1, "_", task_name2), height = 5, width = 5)
 }
 
-df <- load_data("../data/dataset2_driving_info/2/detection.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
-# driving_info_correlation(df, "Fusion", coeff = 0.25, info_name = "Number of Obstacles")
-white_noise_test(df, "Detection")
+df <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
+driving_info_correlation(df, "Planning", coeff = 13, info_name = "Number of recognized obstacles")
+# white_noise_test(df, "Detection")
 
 # df2 <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
 

@@ -87,7 +87,7 @@ plot_acf_pacf <- function(df_acf, df_pacf, nused_acf, nused_pacf, task_name, col
         labs(x = "Lag", y = "PACF") +
         scale_fill_Publication() +
         theme_Publication()
-    g <- grid.arrange(g_acf, g_pacf, ncol = 2, nrow = 1)
+    g <- ggarrange(g_acf, g_pacf, ncol = 2, nrow = 1)
     my_plot(g, name = paste0("ACF_PACF_", task_name), height = 3, width = 10)
 }
 
@@ -232,6 +232,6 @@ acf_pacf <- function(dataset_dir) {
 }
 
 # Main logic
-# acf_pacf("../data/dataset2_driving_info/1/")
-fit_arima_example()
+acf_pacf("../data/dataset2_driving_info/1/")
+# fit_arima_example()
 
