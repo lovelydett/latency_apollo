@@ -132,7 +132,7 @@ fit_arima_example <- function() {
         geom_hline(aes(yintercept = lim1), linetype = 2, colour = "#d50025", size = 1.3) +
         geom_hline(aes(yintercept = lim0), linetype = 2, colour = "#d50025", size = 1.3) +
         coord_cartesian(xlim = c(0, 20)) +
-        labs(x = "Lag", y = "ACF") +
+        labs(x = "Lag", y = "ACF", title = "Residuals") +
         scale_fill_Publication() +
         theme_Publication() +
         theme(axis.title = element_text(face = "bold",size = rel(0.6)), axis.text = element_text(size = rel(0.5)))
@@ -145,7 +145,7 @@ fit_arima_example <- function() {
         geom_hline(aes(yintercept = lim1), linetype = 2, colour = "#d50025", size = 1.3) +
         geom_hline(aes(yintercept = lim0), linetype = 2, colour = "#d50025", size = 1.3) +
         coord_cartesian(xlim = c(0, 20)) +
-        labs(x = "Lag", y = "PACF") +
+        labs(x = "Lag", y = "PACF", title = "Residuals") +
         scale_fill_Publication() +
         theme_Publication() +
         theme(axis.title = element_text(face = "bold",size = rel(0.6)), axis.text = element_text(size = rel(0.5)))
@@ -157,10 +157,10 @@ fit_arima_example <- function() {
     tmp_data1$value <- tmp_data1$residuals
     tmp_data1$type <- "Residuals"
     tmp_data2 <- res[, c("id", "predicted")]
-    tmp_data2$value <- tmp_data2$predicted * 2
-    tmp_data2$type <- "Predicted"
+    tmp_data2$value <- tmp_data2$predicted * 1.5
+    tmp_data2$type <- "Estimated"
     tmp_data3 <- res[, c("id", "truth")]
-    tmp_data3$value <- tmp_data3$truth * 2
+    tmp_data3$value <- tmp_data3$truth * 1.5
     tmp_data3$type <- "Ground truth"
 
     len <- 100
@@ -170,7 +170,7 @@ fit_arima_example <- function() {
 
     tmp_data <- rbind(tmp_data2, tmp_data3)
 
-    g_series <- ggplot(tmp_data, mapping = aes(x = id, y = value, color = type)) +
+    g_series <- ggplot(tmp_data, mapping = aes(x = id, y = value, color = type, shape = type)) +
         geom_point(size = 2) +
         geom_line(size = 1) +
         geom_line(aes(group = id), color = "#8E0C24", size = 1) + # Mannualy add error bar
@@ -191,8 +191,8 @@ fit_arima_example <- function() {
 
     df_gt <- df %>% select(id, execution_time)
     df_pred <- df %>% select(id, et_pred)
-    df_gt$type <- "ground truth"
-    df_pred$type <- "predicted"
+    df_gt$type <- "Ground truth"
+    df_pred$type <- "Estimated"
     names(df_gt) <- c("id", "value", "type")
     names(df_pred) <- c("id", "value", "type")
 
@@ -202,13 +202,13 @@ fit_arima_example <- function() {
         geom_point() +
         geom_abline(slope = 1, intercept = 0, colour = "#8E0C24", size = 2) +
         coord_cartesian(xlim = c(0, 60), ylim = c(0, 50)) +
-        labs(x = "Predicted (ms)", y = "Ground truth (ms)") +
+        labs(x = "Predicted (ms)", y = "Ground truth (ms)", title = "R = 0.61") +
         scale_colour_Publication() +
         theme_Publication() +
         theme(axis.title = element_text(face = "bold", size = rel(0.6)), axis.text = element_text(size = rel(0.5)))
     
     df_to_plot <- rbind(df_gt, df_pred)
-    g_series <- ggplot(df_to_plot, mapping = aes(x = id, y = value, color = type)) +
+    g_series <- ggplot(df_to_plot, mapping = aes(x = id, y = value, color = type, shape = type)) +
         geom_line() +
         geom_point() +
         labs(x = "Input message sequence", y = "Execution time (ms)") +
@@ -232,6 +232,6 @@ acf_pacf <- function(dataset_dir) {
 }
 
 # Main logic
-acf_pacf("../data/dataset2_driving_info/1/")
-# fit_arima_example()
+# acf_pacf("../data/dataset2_driving_info/1/")
+fit_arima_example()
 

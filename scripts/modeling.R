@@ -56,9 +56,9 @@ control_exit_latency <- function(filename) {
     df_lidar$sensor <- "LiDAR"
     df_radar$sensor <- "Radar"
     df <- rbind(df_cam, df_lidar, df_radar)
-    g_lat <- ggplot(df, aes(x = id, y = lat, colour = sensor)) +
+    g_lat <- ggplot(df, aes(x = id, y = lat, colour = sensor, shape = sensor)) +
         geom_line(size = 1.5) + geom_point(size = 3) +
-        labs(title = "Information vacuum period in ControlCommand", x = "ControlCommand sequence", y = "Period length (ms)") +
+        labs(title = "Information vacuum period for ControlCommand", x = "ControlCommand sequence", y = "Period length (ms)") +
         coord_cartesian(ylim = c(1, 300)) +
         scale_colour_Publication() +  theme_Publication() + 
         theme(legend.title = element_blank())
@@ -87,16 +87,16 @@ control_exit_latency <- function(filename) {
     df_lidar$id <- c(1:len)
     df_radar$id <- c(1:len)
     df <- rbind(df_cam, df_lidar, df_radar)
-    g_process <- ggplot(df, aes(x = id, y = lat, color = sensor)) +
+    g_process <- ggplot(df, aes(x = id, y = lat, color = sensor, shape = sensor)) +
         geom_line(size = 1.5) + geom_point(size = 3) +
-        labs(title = "End-to-end processing time", x = "Sensory input sequence", y = "Latency (ms)") +
+        labs(title = "End-to-end information latency", x = "Sensory input sequence", y = "Latency (ms)") +
         coord_cartesian(ylim = c(1, 300)) +
         scale_colour_Publication() + theme_Publication() +
         theme(legend.title = element_blank())
     # my_plot(g_process, "E2E_Process")
 
     # Plot g_lat and g_process in one graph
-    if (0) {
+    if (1) {
         g <- ggarrange(g_lat, g_process, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
         my_plot(g, "E2E", width = 20, height = 5)
     }
@@ -192,21 +192,21 @@ control_exit_latency <- function(filename) {
     df_radar_pred$type <- "Estimated"
 
     df_plot <- rbind(df_cam_gt, df_cam_pred)
-    g_cam <- ggplot(df_plot, mapping = aes(x = id, y = value, color = type)) +
+    g_cam <- ggplot(df_plot, mapping = aes(x = id, y = value, color = type, shape = type)) +
         geom_line(size = 1.5) +
         geom_point(size = 3) +
         labs(title = "EIL for camera", y = "E2E latency (ms)", x = "") +
         theme_Publication() + scale_color_Publication() + theme(legend.title = element_blank())
 
     df_plot <- rbind(df_lidar_gt, df_lidar_pred)
-    g_lidar <- ggplot(df_plot, mapping = aes(x = id, y = value, color = type)) +
+    g_lidar <- ggplot(df_plot, mapping = aes(x = id, y = value, color = type, shape = type)) +
         geom_line(size = 1.5) +
         geom_point(size = 3) +
         labs(title = "EIL for lidar", x = "Output message sequence of ControlCommand") +
         theme_Publication() + scale_color_Publication() + theme(legend.title = element_blank(), axis.title.y = element_blank())
 
     df_plot <- rbind(df_radar_gt, df_radar_pred)
-    g_radar <- ggplot(df_plot, mapping = aes(x = id, y = value, color = type)) +
+    g_radar <- ggplot(df_plot, mapping = aes(x = id, y = value, color = type, shape = type)) +
         geom_line(size = 1.5) +
         geom_point(size = 3) +
         labs(title = "EIL for radar", x = "") +

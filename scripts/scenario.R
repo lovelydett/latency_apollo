@@ -95,7 +95,7 @@ driving_info_correlation <- function(df, task_name, coeff = 10, info_name = "inf
         names_to = "line_type",
         values_to = "line_value"
     )
-    g <- ggplot(df, aes(x = id, y = line_value, colour = line_type))
+    g <- ggplot(df, aes(x = id, y = line_value, colour = line_type, shape = line_type))
     g <- g + geom_line(size = 1.5)
     g <- g + geom_point(size = 3)
     g <- g + scale_y_continuous(
