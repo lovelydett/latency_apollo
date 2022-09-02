@@ -53,7 +53,7 @@ control_exit_latency <- function(filename) {
     df_lidar$id <- c(1 : nrow(df_lidar))
     df_radar$id <- c(1 : nrow(df_radar))
     df_cam$sensor <- "Camera"
-    df_lidar$sensor <- "LiDAR"
+    df_lidar$sensor <- "Lidar"
     df_radar$sensor <- "Radar"
     df <- rbind(df_cam, df_lidar, df_radar)
     g_lat <- ggplot(df, aes(x = id, y = lat, colour = sensor, shape = sensor)) +
@@ -73,7 +73,7 @@ control_exit_latency <- function(filename) {
     names(df_lidar) <- c("ts", "lat")
     names(df_radar) <- c("ts", "lat")
     df_cam$sensor <- "Camera"
-    df_lidar$sensor <- "LiDAR"
+    df_lidar$sensor <- "Lidar"
     df_radar$sensor <- "Radar"
     df_cam <- df_cam[!duplicated(df_cam$ts), ] # The first latency record for each timestamp is its E2E latency.
     df_lidar <- df_lidar[!duplicated(df_lidar$ts), ]
@@ -96,10 +96,8 @@ control_exit_latency <- function(filename) {
     # my_plot(g_process, "E2E_Process")
 
     # Plot g_lat and g_process in one graph
-    if (1) {
-        g <- ggarrange(g_lat, g_process, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
-        my_plot(g, "E2E", width = 20, height = 5)
-    }
+    g <- ggarrange(g_lat, g_process, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
+    my_plot(g, "E2E", width = 20, height = 5)
 
     ### Do moving average directly on EIL
     df_cam <- df_whole %>% select(id, ts_cam, lat_cam)
@@ -212,8 +210,8 @@ control_exit_latency <- function(filename) {
         labs(title = "EIL for radar", x = "") +
         theme_Publication() + scale_color_Publication() + theme(legend.title = element_blank(), axis.title.y = element_blank())
 
-    g <- ggarrange(g_cam, g_lidar, g_radar, ncol = 3, nrow = 1, common.legend = TRUE, legend = "bottom")
-    my_plot(g, "EIL", width = 20, height = 5)
+    # g <- ggarrange(g_cam, g_lidar, g_radar, ncol = 3, nrow = 1, common.legend = TRUE, legend = "bottom")
+    # my_plot(g, "EIL", width = 20, height = 5)
 
     print(mean(abs(df_cam$pred - df_cam$lat_cam)))
     print(mean(abs(df_lidar$pred - df_lidar$lat_lidar)))
