@@ -7,8 +7,8 @@
 # 2. For each scenario-aware component, analyse the correlation between info and execution time
 # 3. For related components, analyse the correlation.
 
-# setwd("/Users/yuting/Codes/latency_apollo/scripts")
-setwd("/home/tt/Codes/latency_apollo/scripts")
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
+# setwd("/home/tt/Codes/latency_apollo/scripts")
 # setwd("D:\\Codes\\latency_apollo\\scripts")
 
 # Tools
@@ -72,8 +72,8 @@ white_noise_test <- function(df, task_name) {
 }
 
 driving_info_correlation <- function(df, task_name, coeff = 10, info_name = "info") {
-    df <- df[300:600, ]
-    df$id <- df$id - 300
+    df <- df[400:700, ]
+    df$id <- df$id - 400
     ###### Plot correlation graph ######
     g <- ggplot(df, aes(x = info, y = execution_time))
     g <- g + geom_point()
@@ -140,8 +140,8 @@ correlation_between_components <- function(df1, df2, task_name1, task_name2) {
     my_plot(g_pacf, name = paste0("CCF_", task_name1, "_", task_name2), height = 5, width = 5)
 }
 
-df <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
-driving_info_correlation(df, "Planning", coeff = 13, info_name = "Number of recognized obstacles")
+df <- load_data("../data/dataset2_driving_info/2/trafficlight.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)
+driving_info_correlation(df, "TrafficlightDetection", coeff = 12, info_name = "Number of traffic lights")
 # white_noise_test(df, "Detection")
 
 # df2 <- load_data("../data/dataset2_driving_info/1/planning.csv", finish_only = TRUE, round = TRUE, is_smooth = FALSE)

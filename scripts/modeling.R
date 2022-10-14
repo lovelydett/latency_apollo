@@ -10,8 +10,8 @@
 # 5. For each edge, judge the predicability.
 # 6. Incorporate the sensor freq to complete the prediction model.
 
-# setwd("/Users/yuting/Codes/latency_apollo/scripts")
-setwd("/home/tt/Codes/latency_apollo/scripts")
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
+# setwd("/home/tt/Codes/latency_apollo/scripts")
 # setwd("D:\\Codes\\latency_apollo\\scripts")
 
 # Tools
@@ -56,9 +56,9 @@ control_exit_latency <- function(filename) {
     df_lidar$sensor <- "Lidar"
     df_radar$sensor <- "Radar"
     df <- rbind(df_cam, df_lidar, df_radar)
-    g_lat <- ggplot(df, aes(x = id, y = lat, colour = sensor, shape = sensor)) +
+    g_lat <- ggplot(df, aes(x = id, y = lat, colour = sensor)) +
         geom_line(size = 1.5) + geom_point(size = 3) +
-        labs(title = "Information vacuum period for ControlCommand", x = "ControlCommand sequence", y = "Period length (ms)") +
+        labs(title = "Information vacuum period in ControlCommand", x = "ControlCommand sequence", y = "Period length (ms)") +
         coord_cartesian(ylim = c(1, 300)) +
         scale_colour_Publication() +  theme_Publication() + 
         theme(legend.title = element_blank())
@@ -89,76 +89,27 @@ control_exit_latency <- function(filename) {
     df <- rbind(df_cam, df_lidar, df_radar)
     g_process <- ggplot(df, aes(x = id, y = lat, color = sensor, shape = sensor)) +
         geom_line(size = 1.5) + geom_point(size = 3) +
-        labs(title = "End-to-end information latency", x = "Sensory input sequence", y = "Latency (ms)") +
+        labs(title = "End-to-end processing time", x = "Sensory input sequence", y = "Latency (ms)") +
         coord_cartesian(ylim = c(1, 300)) +
         scale_colour_Publication() + theme_Publication() +
         theme(legend.title = element_blank())
     # my_plot(g_process, "E2E_Process")
 
     # Plot g_lat and g_process in one graph
-    g <- ggarrange(g_lat, g_process, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
-    my_plot(g, "E2E", width = 20, height = 5)
+    if (0) {
+        g <- ggarrange(g_lat, g_process, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
+        my_plot(g, "E2E", width = 20, height = 5)
+    }
 
     ### Do moving average directly on EIL
-    df_cam <- df_whole %>% select(id, ts_cam, lat_cam)
-    df_lidar <- df_whole %>% select(id, ts_lidar, lat_lidar)
-    df_radar <- df_whole %>% select(id, ts_radar, lat_radar)
+    df_cam <- df_whole %>% select(ts_cam, lat_cam)
+    df_lidar <- df_whole %>% select(ts_lidar, lat_lidar)
+    df_radar <- df_whole %>% select(ts_radar, lat_radar)
     df_cam <- df_cam[!duplicated(df_cam$ts), ] # The first latency record for each timestamp is its E2E latency.
     df_lidar <- df_lidar[!duplicated(df_lidar$ts), ]
     df_radar <- df_radar[!duplicated(df_radar$ts), ]
-
-    df_cam$id <- c(1 : nrow(df_cam))
-    df_lidar$id <- c(1 : nrow(df_lidar))
-    df_radar$id <- c(1 : nrow(df_radar))
-
-
-    df_cam$pred <- df_cam$lat_cam
-    df_lidar$pred <- df_lidar$lat_lidar
-    df_radar$pred <- df_radar$lat_radar
-
-    start <- 100
-    len <- 200
-    df_cam <- df_cam[start:(start + len), ]
-    df_lidar <- df_lidar[start:(start + len), ]
-    df_radar <- df_radar[start:(start + len), ]
-    df_cam$id <- df_cam$id - start
-    df_lidar$id <- df_lidar$id - start
-    df_radar$id <- df_radar$id - start
     
-    for (i in 3 : nrow(df_cam)) {
-        diff <- df_cam[i - 1, "lat_cam"] - df_cam[i - 2, "lat_cam"]
-        if (diff > 0) {
-            df_cam[i, "pred"] <- df_cam[i - 1, "lat_cam"] + runif(1, 0.4, 0.6) * diff + rnorm(1, 0, 12)
-        } else {
-            df_cam[i, "pred"] <- df_cam[i - 1, "lat_cam"] + runif(1, 0.1, 0.4) * diff + rnorm(1, 0, 12)
-        }
-        if (runif(1, 0, 1) < 0.2) {
-            df_cam[i, "pred"] <- rnorm(1, mean(df_cam$lat_cam), 10)
-        }
-    }
-    for (i in 3 : nrow(df_lidar)) {
-        diff <- df_lidar[i - 1, "lat_lidar"] - df_lidar[i - 2, "lat_lidar"]
-        if (diff > 0) {
-            df_lidar[i, "pred"] <- df_lidar[i - 1, "lat_lidar"] + runif(1, 0.4, 0.6) * diff + rnorm(1, 0, 20)
-        } else {
-            df_lidar[i, "pred"] <- df_lidar[i - 1, "lat_lidar"] + runif(1, 0.1, 0.4) * diff + rnorm(1, 0, 20)
-        }
-        if (runif(1, 0, 1) < 0.2) {
-            df_lidar[i, "pred"] <- rnorm(1, mean(df_lidar$lat_lidar), 10)
-        }
-    }
-    for (i in 3 : nrow(df_radar)) {
-        diff <- df_radar[i - 1, "lat_radar"] - df_radar[i - 2, "lat_radar"]
-        if (diff > 0) {
-            df_radar[i, "pred"] <- df_radar[i - 1, "lat_radar"] + runif(1, 0.4, 0.6) * diff + rnorm(1, 0, 20)
-        } else {
-            df_radar[i, "pred"] <- df_radar[i - 1, "lat_radar"] + runif(1, 0.1, 0.4) * diff + rnorm(1, 0, 20)
-        }
-        if (runif(1, 0, 1) < 0.2) {
-            df_radar[i, "pred"] <- rnorm(1, mean(df_radar$lat_radar), 10)
-        }
-    }
-    # df_cam$pred <- df_cam$lat_cam + rnorm(nrow(df_cam), 0, 30)
+    df_cam$lat_cam_pred <- movavg(df_cam$lat_cam, 3, "s")
     # print(head(df_cam))
 
     df_cam$id <- c(1 : nrow(df_cam))
