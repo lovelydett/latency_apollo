@@ -7,8 +7,8 @@
 # 2. Conduct TSA on diff (W - S) for each individual component, to prove a stationary contention effect.
 # 3. Compare all diff (W - S) from different components, to reveal different degrees of contention. 
 
-setwd("/Users/yuting/Codes/latency_apollo/scripts")
-# setwd("/home/tt/Codes/latency_apollo/scripts")
+# setwd("/Users/yuting/Codes/latency_apollo/scripts")
+setwd("/home/tt/Codes/latency_apollo/scripts")
 # setwd("D:\\Codes\\latency_apollo\\scripts")
 
 # Tools
@@ -172,7 +172,7 @@ comparative_box_plots <- function() {
     if (1) {
         g <- ggarrange(g_pred, g_detection, g_fusion_camera, g_lane, g_tl,
              ncol = 3, nrow = 2)
-        my_plot(g, "GPU_box", width = 9, height = 12)
+        my_plot(g, "GPU_box", width = 13, height = 7)
     }
 
 
@@ -270,7 +270,7 @@ comparative_box_plots <- function() {
     # Plot all CPU components
     if (1) {
         g <- ggarrange(g_recognition, g_planning, g_control, g_fusion, g_radar, g_localization, ncol = 3, nrow = 2)
-        my_plot(g, "CPU_box", width = 9, height = 12) 
+        my_plot(g, "CPU_box", width = 13, height = 7) 
     }
 
     ######### Series plots for planning, trafficlight, detection and radar
@@ -336,14 +336,14 @@ comparative_box_plots <- function() {
     g_radar <- ggplot(df, aes(x = id, y = execution_time, color = mode, shape = mode))
     g_radar <- g_radar + geom_line(size = 1.5)
     g_radar <- g_radar + geom_point(size = 3)
-    g_radar <- g_radar + labs(title = "RadarDetection (CPU-only)", x = "Input message sequence", y = "")
+    g_radar <- g_radar + labs(title = "RadarDetection (CPU-only)", x = "Input sequence", y = "")
     g_radar <- g_radar + scale_color_Publication() + theme_Publication() + theme(legend.position = "none")
     # g_radar <- g_radar + theme(legend.position = "bottom", legend.title = element_blank())
 
     # Plot series graph for planning and radar
     if (1) {
         g <- grid.arrange(g_planning, g_trafficlight, g_radar, g_prediction, ncol = 2, nrow = 2)
-        my_plot(g, "Series", width = 25, height = 10)
+        my_plot(g, "Series", width = 18, height = 9)
     }
 }
 

@@ -5,7 +5,7 @@ library(gridExtra)
 
 lwd_pt <- .pt * 72.27 / 96
 
-theme_Publication <- function(base_size=20, base_family="Arial") {
+theme_Publication_old <- function(base_size=20, base_family="Arial") {
       library(grid)
       library(ggthemes)
       (theme_foundation(base_size=base_size, base_family=base_family)
@@ -37,7 +37,7 @@ theme_Publication <- function(base_size=20, base_family="Arial") {
           ))
 }
 
-theme_Publication_big_font <- function(base_size=30, base_family="Arial") {
+theme_Publication <- function(base_size=30, base_family="Arial") {
       library(grid)
       library(ggthemes)
       (theme_foundation(base_size=base_size, base_family=base_family)
@@ -83,7 +83,7 @@ scale_color_Publication <- scale_colour_Publication
 
 my_plot <- function(g, name = "", width = 12, height = 5) {
       # Set image save
-      png(paste0("../result_img/", name, ".pdf"), units = "in", width = width, height = height, res = 300)
+      png(paste0("../result_img/", name, ".png"), units = "in", width = width, height = height, res = 300)
       plot(g)
       dev.off()
 }
