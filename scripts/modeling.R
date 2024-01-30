@@ -10,8 +10,8 @@
 # 5. For each edge, judge the predicability.
 # 6. Incorporate the sensor freq to complete the prediction model.
 
-# setwd("/Users/yuting/Codes/latency_apollo/scripts")
-setwd("/home/tt/Codes/latency_apollo/scripts")
+setwd("/Users/yuting/Codes/latency_apollo/scripts")
+# setwd("/home/tt/Codes/latency_apollo/scripts")
 # setwd("D:\\Codes\\latency_apollo\\scripts")
 
 # Tools
