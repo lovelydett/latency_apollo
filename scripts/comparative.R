@@ -15,7 +15,7 @@ setwd("/Users/yuting/Codes/Personal/latency_apollo/scripts")
 source("./utils/constants.R")
 source("./utils/load_data.R")
 source("./utils/theme_publication.R")
-
+#install.packages("data.table")
 # Packages
 library("stats")
 library("ggplot2")
@@ -24,6 +24,7 @@ library("gridExtra")
 library("cowplot")
 library("ggstatsplot")
 library("ggpubr")
+library("data.table")
 
 # Turn E-Epress off
 options(scipen = 999)
@@ -119,6 +120,9 @@ get_autoware_data <- function() {
 
     df_lidar$execution_time <- df_lidar$execution_time * NS_TO_MS / 10
     df_planning$execution_time <- df_planning$execution_time * NS_TO_MS / 10
+    df_trafficlight_detection$execution_time <- df_trafficlight_detection$execution_time * NS_TO_MS / 10
+    df_control$execution_time <- df_control$execution_time * NS_TO_MS / 10
+    df_localization$execution_time <- df_localization$execution_time * NS_TO_MS / 10
 
     df_lidar$solo <- get_autoware_solo_data(df_lidar, 0.74)
     df_planning$solo <- get_autoware_solo_data(df_planning, 0.87)
@@ -134,21 +138,65 @@ get_autoware_data <- function() {
     write.csv(df_localization, "../data/autoware/localization_duo.csv", row.names = FALSE)
 }
 
+deal_df <- function(df) {
+    df$whole <- df$execution_time
+    # check if start not exist in df
+    if (!("start" %in% colnames(df)))
+    {
+        df$start <- 1:dim(df)[1]
+    }
+
+    df_long <- melt(df, id.vars = c("start"), measure.vars = c("solo", "whole"), variable.name = 'mode', value.name = 'execution_time')
+    return(df_long)
+    #print(head(df_lidar_long))
+}
+
+plot_df <- function(df, title, y1, y2) {
+    g_pred <- ggplot(df, aes(x = mode, y = execution_time, fill = mode))
+    g_pred <- g_pred + geom_boxplot(notch = TRUE)
+    g_pred <- g_pred + stat_summary(fun.y = mean, geom = "point", shape = 20, size = 6, color = "#ED5485", fill = "#ED5485")
+    g_pred <- g_pred + labs(title = title, x = "", y = "Execution time (ms)")
+    g_pred <- g_pred + scale_fill_Publication() + theme_Publication() + theme(legend.position = "middle") + theme(
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()
+    )
+    g_pred <- g_pred + ylim(y1, y2)
+    return(g_pred)
+}
 plot_box_autoware <- function() {
     # 1. Load data
-    df_lidar <- read.csv("../data/autoware/lidar_detection.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-    df_planning <- read.csv("../data/autoware/planning.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-    df_trafficlight_detection <- read.csv("../data/autoware/trafficlight_detection.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-    df_control <- read.csv("../data/autoware/control.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-    df_localization <- read.csv("../data/autoware/localization.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df_lidar <- read.csv("../data/autoware/lidar_detection_duo.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df_planning <- read.csv("../data/autoware/planning_duo.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df_trafficlight_detection <- read.csv("../data/autoware/trafficlight_detection_duo.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df_control <- read.csv("../data/autoware/control_duo.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df_localization <- read.csv("../data/autoware/localization_duo.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
-    df_lidar$whole <- df_lidar$execution_time
-    df_planning$whole <- df_planning$execution_time
-    df_trafficlight_detection$whole <- df_trafficlight_detection$execution_time
-    df_control$whole <- df_control$execution_time
-    df_localization$whole <- df_localization$execution_time
+    
+    df1 <- deal_df(df_lidar)
+    df2 <- deal_df(df_planning)
+    df3 <- deal_df(df_trafficlight_detection)
+    df4 <- deal_df(df_control)
+    df5 <- deal_df(df_localization)
+
+    gp1 <- plot_df(df1, 'lidar',5,35 )
+    gp2 <- plot_df(df2, 'planning', 0,50)
+    gp3 <- plot_df(df3, 'trafficlight_detection',0,50 )
+    gp4 <- plot_df(df4, 'control', 0, 5)
+    gp5 <- plot_df(df5, 'localization', 0, 0.25)
 
     # TODO: plot the box plot to compare execution_time and solo
+    # wide to long format of df_lidar
+    # get column execution time and start of df_lidar
+
+    g <- ggarrange(gp1, gp2, gp3, gp4, gp5,
+        ncol = 5, nrow = 1
+    )
+    my_plot(g, "GPU_box_autoware", width = 30, height = 10)
+
+
+    print("Finish")
+
 }
 
 comparative_box_plots <- function() {
@@ -469,4 +517,4 @@ segment_df <- function(df, start = 1, len = 200) {
 # comparative_test_all()
 # comparative_test_single("../data/dataset1/6", "prediction")
 # comparative_box_plots()
-box_plot_autoware()
+plot_box_autoware()
